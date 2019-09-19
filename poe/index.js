@@ -51,9 +51,15 @@
 //     12 : 'Golden Oil',
 // }
 
+let nodeDesc = {}
+
+
 $(document).ready(() => {
     let opt = '';
 
+    let vals = Object.values(nodes);
+    vals.forEach(val => {nodeDesc[[val.dn]] = val.sd});
+    // console.table(nodeDesc);
     // let pval = $("#oils").html();
     // let lines = pval.split('\n');
     
@@ -112,6 +118,15 @@ $(document).on('click','#button', e => {
         return;
     }
 
-    let passives = getAllPassives(appearances);
+    let passiveNames = getAllPassives(appearances);
+    $("#passiveTable").empty();
+    passiveNames.forEach(pn => {
+        let t = nodeDesc[pn].toString();
+        t = t.replace(/,/g,'<br>');
+        $("#passiveTable").append('<tr>'
+        +'<td>'+pn+'</td>'
+        +'<td>'+t+'</td>'
+        +'</tr>');
+    })
 
 })
