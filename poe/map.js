@@ -40,7 +40,7 @@ getAllPassives = (arr) => {
 
     let pval = $("#oils").html();
     let lines = pval.split('\n');
-    let ret = [];
+    let ret = {};
 
     for(let i = 0; i < 13; i++){
         if(arr[i] == 0)
@@ -59,7 +59,7 @@ getAllPassives = (arr) => {
                 let lineStart = valKey[i]+','+valKey[j]+','+valKey[k]+',';
                 lines.forEach(line => {
                     if(line.trim().startsWith(lineStart)){
-                        ret.push(line.trim().split(lineStart)[1]);
+                        ret[line.trim().split(lineStart)[1]] = lineStart;
                     }
                 })
             }

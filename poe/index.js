@@ -118,14 +118,18 @@ $(document).on('click','#button', e => {
         return;
     }
 
-    let passiveNames = getAllPassives(appearances);
+    let ret  = getAllPassives(appearances);
+    // console.table(ret);
+    let passiveNames = Object.keys(ret);
     $("#passiveTable").empty();
     passiveNames.forEach(pn => {
         let t = nodeDesc[pn].toString();
         t = t.replace(/,/g,'<br>');
+        let oilCol = ret[pn].replace(/,/g,'<br>');
         $("#passiveTable").append('<tr>'
         +'<td>'+pn+'</td>'
         +'<td>'+t+'</td>'
+        +'<td>'+oilCol+'</td>'
         +'</tr>');
     })
 
