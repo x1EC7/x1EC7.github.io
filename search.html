@@ -1,51 +1,89 @@
 <!doctype html>
 <html>
 <head>
-    <script>
-        async function getData() {
-            const response = await fetch('https://salesforcecommercecloud.github.io/b2c-dev-doc/search.json');
-            const data = await response.json();
-            return data;
-        }
+	<script>
+		async function getData() {
+			const response = await fetch('https://salesforcecommercecloud.github.io/b2c-dev-doc/search.json');
+			const data = await response.json();
+			return data;
+		}
 
-        var data = getData();
-        var ret;
-        data.then(result => ret = result)
+		var data = getData();
+		var ret;
+		data.then(result => ret = result)
 
-        function formatPage(page, val) {
-            let html = '<div id="resultBlock"><a href="https://salesforcecommercecloud.github.io' + page.url + '" target="_blank">'+page.title+'</a>'+
-                '<br><p>' + page?.content?.substring(0,250) + '...</p><br></div><br>'
-            let bval = '<b>' + val + '</b>'
-            return html.replaceAll(val,bval);
-        }
+		function formatPage(page, val) {
+			let html = '<div id="resultBlock"><a href="https://salesforcecommercecloud.github.io' + page.url + '" target="_blank"><span style="link-font">'+page.title+'</span></a>'+
+				'<br><p>' + page?.content?.substring(0,250) + '...</p><br></div><br>'
+//			let bval = '<b>' + val + '</b>'
+			return html//.replaceAll(val,bval);
+		}
 
-        function searchList() {
-            var val = document.getElementById('searchTerm').value.toUpperCase();
-            var results = 
-                ret.filter(page => Object.keys(page).length &&
-                    (page.content?.toUpperCase().indexOf(val) !== -1 || page.title?.toUpperCase().indexOf(val) !== -1) && 
-                    page.url?.indexOf('/upcoming/') !== -1 && 
-                    page.title?.indexOf('Server-side javascript') === -1)
-                .map(page => formatPage(page, val)).join('');
-            document.getElementById('searchResult').innerHTML = results;
-        }
-    </script>
-    <style>
-        .center {
-            margin-top: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
+		function searchList() {
+			var val = document.getElementById('searchTerm').value;
+			var sval = document.getElementById('searchTerm').value.toUpperCase();
+			if(val.length === 0) return;
+			var results = 
+				ret.filter(page => Object.keys(page).length &&
+					(page.content?.toUpperCase().indexOf(sval) !== -1 || page.title?.toUpperCase().indexOf(sval) !== -1) && 
+					page.url?.indexOf('/upcoming/') !== -1 && 
+					page.title?.indexOf('Server-side javascript') === -1)
+				.map(page => formatPage(page, val)).join('');
+			document.getElementById('searchResult').innerHTML = results;
+		}
+	</script>
+	<style>
+		.c-margin-top-bottom {
+			margin-top: 30px;
+			margin-bottom: 30px;
+		}
+		.c-center {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.c-search-input {
+			margin-right:10px;
+			width: 20%;
+		}
+		.c-border-radius {
+			border-radius: 10px;
+		}
+		#resultBlock {
+			width:70%;
+			margin: auto;
+		}
+		a {
+			font-size: 20px;
+		}
+		body {
+			background-color: #bbb;
+		}
+	</style>
 </head>
 <body>
-    <div class="center">
-        <input type="text" id="searchTerm" />
-        <button onClick="searchList()">Search</button>
-    </div>
-    <div id="searchResult">
+	<div class="c-center c-margin-top-bottom">
+		<input type="text" id="searchTerm" class="c-border-radius c-search-input"/>
+		<button id="btn" class="border-radius">Search</button>
+	</div>
+	<div id="searchResult" class="c-content-center">
 
-    </div>
+	</div>
+	<script>
+		let btn = document.getElementById('btn');
+		btn.addEventListener('click', (ev)=>{
+			searchList();
+		});
+		document.addEventListener('keypress', (event) => {
+			let keyCode = event.keyCode ? event.keyCode : event.which;
+			if(keyCode === 13) {
+				btn.click();
+			}
+		});
+		let inputElem = document.querySelector("#searchTerm");
+		window.addEventListener('load', function(e) {
+			inputElem.focus();
+		})
+	</script>
 </body>
 </html>
