@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
 <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>SFCC search</title>
 	<script>
 		async function getData() {
@@ -14,10 +15,15 @@
 		data.then(result => ret = result)
 
 		function formatPage(page, val) {
-			let html = '<div id="resultBlock"><a href="https://salesforcecommercecloud.github.io' + page.url + '" target="_blank"><span style="link-font">'+page.title+'</span></a>'+
-				'<br><p>' + page?.content?.substring(0,250) + '...</p><br></div><br>'
-//			let bval = '<b>' + val + '</b>'
-			return html//.replaceAll(val,bval);
+			// let bval = '<b>' + val + '</b>'
+			let {url, title, content} = page;
+			// title = title.replaceAll(val,bval);
+			if (page.title.indexOf('Class ') === 0){
+				content = content.substring(content.search(/(dw(\.\w{1,30}){2,}\s)+/), content.search(/\s(Properties|Constants)\s/)).replaceAll(/dw(\.\w+)+\s/g,'');
+			}
+			let html = '<div id="resultBlock"><a href="https://salesforcecommercecloud.github.io' + page.url + '" target="_blank"><span style="link-font">'+title+'</span></a>'+
+				'<br><p>' + content.substring(0,350) + (content.length >= 350 ? '...' : '') + '</p><br></div>';
+			return html;
 		}
 
 		function searchList() {
