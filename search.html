@@ -10,8 +10,8 @@
 			return data;
 		}
 
-		var data = getData();
-		var ret;
+		const data = getData();
+		let ret;
 		data.then(result => ret = result)
 
 		function formatPage(page, val) {
@@ -27,10 +27,10 @@
 		}
 
 		function searchList() {
-			var val = document.getElementById('searchTerm').value;
-			var sval = document.getElementById('searchTerm').value.toLowerCase();
+			const val = document.getElementById('searchTerm').value;
+			const sval = document.getElementById('searchTerm').value.toLowerCase();
 			if(val.length === 0) return;
-			var results = 
+			let results = 
 			ret.filter(page => Object.keys(page).length &&
 			(page.content?.toLowerCase().indexOf(sval) !== -1 || page.title?.toLowerCase().indexOf(sval) !== -1) && 
 			page.url?.indexOf('/upcoming/') !== -1 && 
