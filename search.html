@@ -28,14 +28,38 @@
 
 		function searchList() {
 			var val = document.getElementById('searchTerm').value;
-			var sval = document.getElementById('searchTerm').value.toUpperCase();
+			var sval = document.getElementById('searchTerm').value.toLowerCase();
 			if(val.length === 0) return;
 			var results = 
-				ret.filter(page => Object.keys(page).length &&
-					(page.content?.toUpperCase().indexOf(sval) !== -1 || page.title?.toUpperCase().indexOf(sval) !== -1) && 
-					page.url?.indexOf('/upcoming/') !== -1 && 
-					page.title?.indexOf('Server-side javascript') === -1)
-				.map(page => formatPage(page, val)).join('');
+			ret.filter(page => Object.keys(page).length &&
+			(page.content?.toLowerCase().indexOf(sval) !== -1 || page.title?.toLowerCase().indexOf(sval) !== -1) && 
+			page.url?.indexOf('/upcoming/') !== -1 && 
+			page.title?.indexOf('Server-side javascript') === -1);
+			let sortedResults = [];
+			if(sval.indexOf('class') === -1) {
+				const searchTerm = 'class ' + sval;
+				let theOne = null, hits = [], misses = [];
+				results.forEach(x => {
+					if (x.title.toLowerCase() === searchTerm) {
+						theOne = x;
+						return;
+					}
+					if (x.title.toLowerCase().indexOf(searchTerm) !== -1) {
+						hits.push(x);
+					} else {
+						misses.push(x);
+					}
+				})
+				if (theOne !== null) {
+					sortedResults = [theOne];
+				}
+				sortedResults = [...sortedResults, ...hits, ...misses];
+			} else {
+				results.unshift(results.splice(results.findIndex(x => x.title.toLowerCase() === searchTerm), 1)[0]);
+				sortedResults = results;
+			}
+			results = sortedResults.map(page => formatPage(page, val)).join('');
+
 			document.getElementById('searchResult').innerHTML = results;
 		}
 	</script>
