@@ -57,7 +57,7 @@ function searchList() {
     let sortedResults = [];
     if (sval.indexOf('class') === -1) {
         const searchTerm = 'class ' + sval;
-        let theOne = null, hits = [], misses = [], children = [];
+        let theOne = null, hits = [], children = [];
 
         results.some(x => {
             if (x.title.toLowerCase() === searchTerm) {
@@ -86,15 +86,13 @@ function searchList() {
 
             if (x.title.toLowerCase().indexOf(searchTerm) !== -1) {
                 hits.push(x);
-            } else {
-                misses.push(x);
             }
         })
 
         if (theOne !== null) {
             sortedResults = [theOne];
         }
-        sortedResults = [...sortedResults, ...children, ...hits, ...misses];
+        sortedResults = [...sortedResults, ...children, ...hits];
 
         if (sortedResults.length === 0) {
             sortedResults = ret.filter(page =>
