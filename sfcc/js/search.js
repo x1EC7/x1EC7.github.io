@@ -22,13 +22,9 @@ function objectPath(content) {
     try {
         let valuesArr = values[0].split(/\s?dw\./);
         includes = valuesArr.join(' dw.').split(' ');
-        if (content.indexOf('dw.order.ProductLineItem') !== -1) {
-            var dbg = 1;
-        }
         spliceAtFirstNonDW(includes);
-        console.log('i: ' + includes);
     } catch (error) {
-        console.log('e: ' + error)
+        console.log('error: ' + error)
         includes = ''
     }
     return includes;
@@ -37,10 +33,9 @@ function objectPath(content) {
 /**
  * 
  * @param {*} page search.json data
- * @param {*} val search term
- * @returns 
+ * @returns formatted html
  */
-function formatPage(page, val) {
+function formatPage(page) {
     let { url, title, content } = page;
     if (page.title.indexOf('Class ') === 0) {
         content = content.substring(content.search(/(dw(\.\w{1,30}){2,}\s)+/), content.search(/\s(Properties|Constants)\s/)).replaceAll(/dw(\.\w+)+\s/g, '');
@@ -72,7 +67,10 @@ function searchList() {
 
         let searchObjectPath = [];
         if (theOne) {
-            searchObjectPath = objectPath(theOne.content).pop();
+            const objectPathArray = objectPath(theOne.content);
+            if (objectPathArray.length > 0) {
+                searchObjectPath = objectPathArray.pop();
+            }
         }
 
         results.forEach(x => {
@@ -98,11 +96,29 @@ function searchList() {
         }
         sortedResults = [...sortedResults, ...children, ...hits, ...misses];
 
+        if (sortedResults.length === 0) {
+            sortedResults = ret.filter(page =>
+                Object.keys(page).length &&
+                page.url?.indexOf('/upcoming/') !== -1 &&
+                page.title?.indexOf('Server-side javascript') === -1)
+                .map(page => {
+                    return {
+                        page: page,
+                        wordFrequency: sval.split(' ').map(w => {
+                            let occurrences = page.content.match(new RegExp(w, 'g'));
+                            return occurrences && occurrences.length || 0;
+                        }).reduce((e, a) => e + a, 0)
+                    }
+                })
+                .filter(obj => obj.wordFrequency > 0)
+                .sort((a, b) => b.wordFrequency - a.wordFrequency)
+                .map(obj => obj.page)
+        }
     } else {
         results.unshift(results.splice(results.findIndex(x => x.title.toLowerCase() === searchTerm), 1)[0]);
         sortedResults = results;
     }
-    results = sortedResults.map(page => formatPage(page, val)).join('');
+    results = sortedResults.map(page => formatPage(page)).join('');
 
     document.getElementById('searchResult').innerHTML = results;
 }
