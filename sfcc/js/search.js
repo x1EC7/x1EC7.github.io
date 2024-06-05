@@ -45,6 +45,36 @@ function formatPage(page) {
     return html;
 }
 
+function searchTermSubPhrases(sval) {
+    const wordArr = sval.split(' ')
+    const wordCount = wordArr.length
+    const allSearchTerms = [sval];
+    for (i = 2; i < wordCount; i++) {
+        for (j = 0; j < wordCount - i + 1; j++) {
+            let newstr = [];
+            for (k = j; k < j + i; k++) {
+                newstr.push(wordArr[k])
+            }
+            allSearchTerms.push(newstr.join(' '))
+        }
+    }
+    allSearchTerms.push(...wordArr);
+    return [...new Set(allSearchTerms)];
+}
+
+function calculateWeightedWordFrequency(page, allSearchTerms) {
+    return allSearchTerms.map(searchTerm => {
+        let weight = 0;
+        if (page.content.toLowerCase().indexOf(searchTerm) !== -1) {
+            weight += 100 ** searchTerm.split(' ').length;
+        }
+        if (page.title.toLowerCase().indexOf(searchTerm) !== -1) {
+            weight += 100 ** searchTerm.split(' ').length;
+        }
+        return weight;
+    }).reduce((e, a) => e + a, 0);
+}
+
 function searchList() {
     const val = document.getElementById('searchTerm').value;
     const sval = document.getElementById('searchTerm').value.toLowerCase();
@@ -60,7 +90,9 @@ function searchList() {
         let theOne = null, hits = [], children = [];
 
         results.some(x => {
-            if (x.title.toLowerCase() === searchTerm) {
+            if (x.title.toLowerCase() === searchTerm
+                // || x.title.toLowerCase() === 'class ' + sval.replace(/\s/g, '')
+            ) {
                 theOne = x;
             }
         });
@@ -74,7 +106,9 @@ function searchList() {
         }
 
         results.forEach(x => {
-            if (x.title.toLowerCase() === searchTerm) {
+            if (x.title.toLowerCase() === searchTerm
+                // || x.title.toLowerCase() === 'class ' + sval.replace(/\s/g, '')
+            ) {
                 return;
             }
 
@@ -95,17 +129,17 @@ function searchList() {
         sortedResults = [...sortedResults, ...children, ...hits];
 
         if (sortedResults.length === 0) {
+            const allSearchTerms = searchTermSubPhrases(sval);
             sortedResults = ret.filter(page =>
                 Object.keys(page).length &&
                 page.url?.indexOf('/upcoming/') !== -1 &&
-                page.title?.indexOf('Server-side javascript') === -1)
+                page.title?.indexOf('Server-side javascript') === -1 &&
+                page.title?.indexOf('Quotas') === -1 &&
+                page.title?.indexOf('Deprecated') === -1)
                 .map(page => {
                     return {
                         page: page,
-                        wordFrequency: sval.split(' ').map(w => {
-                            let occurrences = page.content.match(new RegExp(w, 'g'));
-                            return occurrences && occurrences.length || 0;
-                        }).reduce((e, a) => e + a, 0)
+                        wordFrequency: calculateWeightedWordFrequency(page, allSearchTerms)
                     }
                 })
                 .filter(obj => obj.wordFrequency > 0)
