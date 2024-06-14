@@ -15,6 +15,9 @@
 .c-border-radius {
     border-radius: 10px;
 }
+.c-margin-right {
+    margin-right:5px;
+}
 #resultBlock {
     width:70%;
     margin: auto;
