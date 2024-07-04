@@ -15,7 +15,7 @@ function spliceAtFirstNonDW(array) {
 }
 
 function objectPath(content) {
-    let values = content.substring(content.search(/(dw(\.\w{1,30}){2,}\s)+/), content.search(/\s(Properties|Constants)\s/)).replaceAll(/dw(\.\w+)+\s/g, '');
+    let values = content.substring(content.search(/(dw(\.\w{1,30}){2,}\s)+/), content.search(/\s(Properties|Constants|Constructor Summary)\s/)).replaceAll(/dw(\.\w+)+\s/g, '');
     values = content.match(/dw\..{2,20}\..+\s/);
 
     let includes;
@@ -38,7 +38,15 @@ function objectPath(content) {
 function formatPage(page) {
     let { url, title, content } = page;
     if (page.title.indexOf('Class ') === 0) {
-        content = content.substring(content.search(/(dw(\.\w{1,30}){2,}\s)+/), content.search(/\s(Properties|Constants)\s/)).replaceAll(/dw(\.\w+)+\s/g, '');
+        const className = page.title.split('Class ')[1];
+        content = content.substring(content.search(/(dw(\.\w{1,30}){2,}\s)+/), content.search(/\s(Properties|Constants|Constructor Summary)\s/)).replaceAll(/dw(\.\w+)+\s/g, '');
+        const splitPoint = 'Class ' + className + ' Object ' + className + ' ';
+        const classObject = 'Class ' + className + ' ' + className;
+        if (content.length && content.indexOf(splitPoint) !== -1) {
+            content = content.split(splitPoint)[1];
+        } else if (content.length && content.indexOf(classObject) !== -1) {
+            content = content.split(classObject)[1];
+        }
     }
     let html = '<div id="resultBlock"><a href="https://salesforcecommercecloud.github.io' + url + '" target="_blank"><span style="link-font">' + title + '</span></a>' +
         '<br><p>' + content.substring(0, 350) + (content.length >= 350 ? '...' : '') + '</p><br></div>';
@@ -66,10 +74,10 @@ function calculateWeightedWordFrequency(page, allSearchTerms) {
     return allSearchTerms.map(searchTerm => {
         let weight = 0;
         if (page.content.toLowerCase().indexOf(searchTerm) !== -1) {
-            weight += 100 ** searchTerm.split(' ').length;
+            weight += 1000 ** searchTerm.split(' ').length;
         }
         if (page.title.toLowerCase().indexOf(searchTerm) !== -1) {
-            weight += 100 ** searchTerm.split(' ').length;
+            weight += 1000000000 ** searchTerm.split(' ').length;
         }
         return weight;
     }).reduce((e, a) => e + a, 0);
