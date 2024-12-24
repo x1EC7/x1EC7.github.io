@@ -49,7 +49,7 @@ function formatPage(page) {
         }
     }
     let html = '<div id="resultBlock"><a href="https://salesforcecommercecloud.github.io' + url + '" target="_blank"><span style="link-font">' + title + '</span></a>' +
-        '<br><p>' + content.substring(0, 350) + (content.length >= 350 ? '...' : '') + '</p><br></div>';
+        '<br><p>' + content + '</p><br></div>';
     return html;
 }
 
