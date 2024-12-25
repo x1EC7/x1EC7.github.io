@@ -6,7 +6,7 @@ async function getData() {
 
 const data = getData();
 let ret;
-data.then(result => ret = result)
+data.then(result => ret = result);
 
 function spliceAtFirstNonDW(array) {
     array.shift();
@@ -24,8 +24,8 @@ function objectPath(content) {
         includes = valuesArr.join(' dw.').split(' ');
         spliceAtFirstNonDW(includes);
     } catch (error) {
-        console.log('error: ' + error)
-        includes = ''
+        console.log('error: ' + error);
+        includes = '';
     }
     return includes;
 }
@@ -54,16 +54,16 @@ function formatPage(page) {
 }
 
 function searchTermSubPhrases(sval) {
-    const wordArr = sval.split(' ')
-    const wordCount = wordArr.length
+    const wordArr = sval.split(' ');
+    const wordCount = wordArr.length;
     const allSearchTerms = [sval];
     for (i = 2; i < wordCount; i++) {
         for (j = 0; j < wordCount - i + 1; j++) {
             let newstr = [];
             for (k = j; k < j + i; k++) {
-                newstr.push(wordArr[k])
+                newstr.push(wordArr[k]);
             }
-            allSearchTerms.push(newstr.join(' '))
+            allSearchTerms.push(newstr.join(' '));
         }
     }
     allSearchTerms.push(...wordArr);

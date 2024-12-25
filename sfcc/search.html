@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>SFCC Search 0.2.3</title>
+    <title>SFCC Search 1.0.0</title>
     <script src="js/search.js"></script>
     <link rel="stylesheet" href="css/search.css">
 </head>
@@ -35,6 +35,23 @@
         window.addEventListener('load', function (e) {
             inputElem.focus();
         })
+
+        let map = {};
+        onkeydown = onkeyup = function(e){
+            e = e || event;
+            map[e.keyCode+''] = e.type == 'keydown';
+            if (map[16]) {
+                let combination = map[48] ? 10 : 0;
+                for (let i = 49; i < 58; i++) {
+                    if (map[i]) {
+                        combination = i - 48;
+                    }
+                }
+                document.querySelector(`#searchResult div:nth-child(${combination}) a`).click();
+                document.activeElement.blur();
+                map = {};
+            }
+        }
     </script>
 </body>
 
