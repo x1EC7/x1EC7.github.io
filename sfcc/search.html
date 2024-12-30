@@ -40,7 +40,7 @@
         onkeydown = onkeyup = function(e){
             e = e || event;
             map[e.keyCode+''] = e.type == 'keydown';
-            if (map[16]) {
+            if (map[18]) {
                 let combination = map[48] ? 10 : 0;
                 for (let i = 49; i < 58; i++) {
                     if (map[i]) {
